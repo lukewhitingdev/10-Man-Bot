@@ -6,7 +6,7 @@ const prefix = '!';
 let emptyArray = new Array();
 var PlayerArray = new Array();
 var PlayerQueueString = "";
-let matchSize = 10;
+let matchSize = 2;
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
   client.user.setStatus("online");
@@ -32,10 +32,12 @@ client.on('message', msg => {
 client.login(auth.token);
 
 function popQueue(messageDebug){
+  var stringConcat = "";
   PlayerArray.forEach(player => {
-    messageDebug.channel.send("" + messageDebug.author + "");
-  });
+    stringConcat = stringConcat + "" + player + "";
+  })
 
+  messageDebug.channel.send(stringConcat);
 }
 
 function addPlayerToQueue(commandArg, messageDebug){
@@ -52,7 +54,7 @@ function addPlayerToQueue(commandArg, messageDebug){
   }
   printQueue(messageDebug);
 
-  if(PlayerArray.length != matchSize){
+  if(PlayerArray.length == matchSize){
     popQueue(messageDebug);
   }
 }
@@ -65,7 +67,7 @@ function clearPlayerQueue(messageDebug){
 }
 
 function printQueue(message){
-  message.channel.send('``` [Queue] \n ' + PlayerQueueString + '```');
+  message.channel.send('```[Queue]\n' + PlayerQueueString + '```');
 }
 
 function printDebug(args, command, messageDebug){
