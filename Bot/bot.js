@@ -1,9 +1,7 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const auth = require('./auth.json');
-const prefix = '!';
-
-// Queue bot vars.
+const prefix = '!q-';
 
 var PlayerArray = new Array();
 
@@ -20,15 +18,24 @@ client.on('message', msg => {
   printDebug(args, command, msg);                                             // Used to debug can be disabled later.
 
   if(command == 'queue'){
-    addPlayerToQueue(command);
+    addPlayerToQueue(command, msg);
+  }
+  if(command == 'clear'){
+    clearPlayerQueue();
   }
 
 });
 
 client.login(auth.token);
 
-function addPlayerToQueue(commandArg){
-  
+function addPlayerToQueue(commandArg, messageDebug){
+  messageDebug.reply('Added to queue!');
+  PlayerArray.push(messageDebug.author);
+  messageDebug.channel.send('[Debug] ' + PlayerArray.length);
+}
+
+function clearPlayerQueue(){
+  PlayerArray = new Array();
 }
 
 function printDebug(args, command, messageDebug){
