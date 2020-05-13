@@ -6,7 +6,7 @@ const prefix = '!';
 let emptyArray = new Array();
 var PlayerArray = new Array();
 var PlayerQueueString = "";
-let matchSize = 2;
+let matchSize = 10;
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
   client.user.setStatus("online");
