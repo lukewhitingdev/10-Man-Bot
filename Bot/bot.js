@@ -1,12 +1,14 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const auth = require('./auth.json');
-const prefix = '!q- ';
+const prefix = '!';
 
+let emptyArray = new Array();
 var PlayerArray = new Array();
-
+var PlayerQueueString = "";
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
+  client.user.setStatus("online");
 });
 
 client.on('message', msg => {
@@ -21,7 +23,7 @@ client.on('message', msg => {
     addPlayerToQueue(command, msg);
   }
   if(command == 'clear'){
-    clearPlayerQueue();
+    clearPlayerQueue(msg);
   }
 
 });
@@ -29,13 +31,29 @@ client.on('message', msg => {
 client.login(auth.token);
 
 function addPlayerToQueue(commandArg, messageDebug){
+  var messageUsername = messageDebug.author.username;
+
   messageDebug.reply('Added to queue!');
   PlayerArray.push(messageDebug.author);
-  messageDebug.channel.send('[Debug] ' + PlayerArray.length);
+  messageUsername = messageUsername + "\n";
+
+  if(PlayerQueueString == ""){
+    PlayerQueueString = messageUsername;
+  }else{
+    PlayerQueueString = PlayerQueueString + messageUsername;
+  }
+  printQueue(messageDebug);
 }
 
-function clearPlayerQueue(){
-  PlayerArray = new Array();
+function clearPlayerQueue(messageDebug){
+  messageDebug.reply('Cleared the queue!');
+  PlayerArray.length = emptyArray;
+  PlayerQueueString = "";
+  printQueue(messageDebug);
+}
+
+function printQueue(message){
+  message.channel.send('``` [Queue] \n ' + PlayerQueueString + '```');
 }
 
 function printDebug(args, command, messageDebug){
