@@ -6,6 +6,7 @@ const prefix = '!';
 let emptyArray = new Array();
 var PlayerArray = new Array();
 var PlayerQueueString = "";
+let matchSize = 10;
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
   client.user.setStatus("online");
@@ -30,6 +31,13 @@ client.on('message', msg => {
 
 client.login(auth.token);
 
+function popQueue(messageDebug){
+  PlayerArray.forEach(player => {
+    messageDebug.channel.send("" + messageDebug.author + "");
+  });
+
+}
+
 function addPlayerToQueue(commandArg, messageDebug){
   var messageUsername = messageDebug.author.username;
 
@@ -43,6 +51,10 @@ function addPlayerToQueue(commandArg, messageDebug){
     PlayerQueueString = PlayerQueueString + messageUsername;
   }
   printQueue(messageDebug);
+
+  if(PlayerArray.length != matchSize){
+    popQueue(messageDebug);
+  }
 }
 
 function clearPlayerQueue(messageDebug){
