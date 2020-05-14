@@ -5,11 +5,37 @@ const prefix = '!';
 
 let emptyArray = new Array();
 var PlayerArray = new Array();
-var PlayerQueueString = "";
-let matchSize = 10;
+var popFlashURL = "";
+let matchSize = 1;
+
+const exampleEmbed = {
+  color: 0xff0000,
+  title: '',
+  description: '',
+
+  timestamp: new Date(),
+  footer: {
+    text: '',
+  },
+};
+
+const popEmbed = {
+	color: 0xff0000,
+	title: 'LINK',
+	url: 'https://popflash.site',
+	author: {
+		name: 'QUEUE POPPED!',
+  },	
+  thumbnail: {
+    url: 'https://pbs.twimg.com/profile_images/925581445455863808/m9XWlq_5_400x400.jpg',
+    //https://i.gyazo.com/7ddf93292a3006448708ef25cf13163f.png
+	},
+};
+
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
   client.user.setStatus("online");
+  PlayerArray.length = 0;
 });
 
 client.on('message', msg => {
@@ -19,6 +45,9 @@ client.on('message', msg => {
   const command = args.shift().toLowerCase();
 
   printDebug(args, command, msg);                                             // Used to debug can be disabled later.
+
+  // Admin Commands 
+  
 
   if(command == 'queue'){
     addPlayerToQueue(command, msg);
@@ -41,6 +70,9 @@ client.login(auth.token);
 
 function popQueue(messageDebug){
   var stringConcat = "";
+
+  messageDebug.channel.send({ embed: popEmbed });
+
   PlayerArray.forEach(player => {
     stringConcat = stringConcat + "" + player + "";
   })
@@ -52,9 +84,18 @@ function popQueue(messageDebug){
 
 function addPlayerToQueue(commandArg, messageDebug){
 
-  messageDebug.reply('Added to queue!');
-  PlayerArray.push(messageDebug.author);
-  printQueue(messageDebug);
+  if(PlayerArray.indexOf(messageDebug.author) != -1){
+    exampleEmbed.title = '**' + messageDebug.author.username + '**' +  ' is already in the queue!';
+  }else{
+    PlayerArray.push(messageDebug.author);
+    exampleEmbed.title = '**' + messageDebug.author.username + '**' +  ' has been added to the queue' + ' (' + PlayerArray.length + '/' + matchSize + ') ';
+  }
+  
+  exampleEmbed.description = '';
+  exampleEmbed.footer.text = '';
+  
+  messageDebug.channel.send({ embed: exampleEmbed });
+  //printQueue(messageDebug);
 
   if(PlayerArray.length == matchSize){
     popQueue(messageDebug);
@@ -80,28 +121,23 @@ function removePlayerFromQueue(messageDebug){
 function clearPlayerQueue(messageDebug){
   messageDebug.reply('Cleared the queue!');
   PlayerArray.length = emptyArray;
-  PlayerQueueString = "";
-  printQueue(messageDebug);
 }
 
-function printQueue(message){
-  rebuildPlayerListString();                                          // make sure we have the most updated player list to be showing.
-  message.channel.send('```[Queue]\n' + PlayerQueueString + '```');
+function printQueue(messageDebug){
+
+  exampleEmbed.title = 'Queue';
+
+  var stringConcat = "";
+  PlayerArray.forEach(player => {
+    stringConcat = stringConcat + "" + player + "" + "\n";
+  })
+
+  exampleEmbed.description = stringConcat;
+
+  messageDebug.channel.send({ embed: exampleEmbed });
 }
 
 // Helper Functions
-
-function rebuildPlayerListString(){
-  PlayerQueueString = "";
-  PlayerArray.forEach(player => {
-    var messageUsername = player.username + "\n";
-    if(PlayerQueueString == ""){
-      PlayerQueueString = messageUsername;
-    }else{
-      PlayerQueueString = PlayerQueueString + messageUsername;
-    }
-  });
-}
 
 function printDebug(args, command, messageDebug){
   if(command == 'args'){
