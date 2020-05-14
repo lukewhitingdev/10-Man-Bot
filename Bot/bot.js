@@ -5,7 +5,7 @@ const prefix = '!';
 
 let emptyArray = new Array();
 var PlayerArray = new Array();
-var popFlashURL = "";
+var popFlashURL = "https://i.imgflip.com/2e1lxv.jpg"; // Links to image if people dont set it.
 let matchSize = 1;
 
 const exampleEmbed = {
@@ -22,14 +22,13 @@ const exampleEmbed = {
 const popEmbed = {
 	color: 0xff0000,
 	title: 'LINK',
-	url: 'https://popflash.site',
+	url: popFlashURL,
 	author: {
 		name: 'QUEUE POPPED!',
   },	
   thumbnail: {
     url: 'https://pbs.twimg.com/profile_images/925581445455863808/m9XWlq_5_400x400.jpg',
-    //https://i.gyazo.com/7ddf93292a3006448708ef25cf13163f.png
-	},
+	}
 };
 
 client.on('ready', () => {
@@ -47,7 +46,9 @@ client.on('message', msg => {
   printDebug(args, command, msg);                                             // Used to debug can be disabled later.
 
   // Admin Commands 
-  
+  if(command == 'setpf'){
+    setPopFlashLink(args, msg);
+  }
 
   if(command == 'queue'){
     addPlayerToQueue(command, msg);
@@ -71,16 +72,29 @@ client.login(auth.token);
 function popQueue(messageDebug){
   var stringConcat = "";
 
+  if(popFlashURL == "https://i.imgflip.com/2e1lxv.jpg"){
+    messageDebug.channel.send();
+    exampleEmbed.title = "[ERROR] POP FLASH LINK NOT SET IT WILL NOT LINK ANYWHERE DUMB DUMB!";
+    exampleEmbed.color = 0xff00b7;
+    exampleEmbed.footer.text = "set it with !setPF";
+    messageDebug.channel.send({ embed: exampleEmbed });
+    exampleEmbed.color = 0xff0000;
+  }
+
   messageDebug.channel.send({ embed: popEmbed });
 
   PlayerArray.forEach(player => {
-    stringConcat = stringConcat + "" + player + "";
+    if(player != ""){
+      stringConcat = stringConcat + "" + player + "";
+    }
   })
 
   messageDebug.channel.send(stringConcat);
 }
 
 // Command functions
+
+/// Queue Related
 
 function addPlayerToQueue(commandArg, messageDebug){
 
@@ -125,7 +139,7 @@ function clearPlayerQueue(messageDebug){
 
 function printQueue(messageDebug){
 
-  exampleEmbed.title = 'Queue';
+  exampleEmbed.title = 'Queue' + ' (' + PlayerArray.length + '/' + matchSize + ')';
 
   var stringConcat = "";
   PlayerArray.forEach(player => {
@@ -135,6 +149,18 @@ function printQueue(messageDebug){
   exampleEmbed.description = stringConcat;
 
   messageDebug.channel.send({ embed: exampleEmbed });
+}
+
+/// Setting Related
+
+function setPopFlashLink(Arguments, messageDebug){
+  if(Arguments.length == 0){
+    messageDebug.reply('No Arguments recieved!');
+    return;
+  }
+  popFlashURL = Arguments.toString();
+  popEmbed.url = popFlashURL;
+  messageDebug.reply('PopFlash link updated!');
 }
 
 // Helper Functions
