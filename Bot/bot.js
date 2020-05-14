@@ -50,6 +50,10 @@ client.on('message', msg => {
     setPopFlashLink(args, msg);
   }
 
+  if(command == 'setmatchsize'){
+    setMatchSize(args, msg);
+  }
+
   if(command == 'queue'){
     addPlayerToQueue(command, msg);
   }
@@ -161,6 +165,11 @@ function setPopFlashLink(Arguments, messageDebug){
   popFlashURL = Arguments.toString();
   popEmbed.url = popFlashURL;
   messageDebug.reply('PopFlash link updated!');
+}
+
+function setMatchSize(Arguments, messageDebug){
+  messageDebug.reply('Match size set to: ' + Arguments);
+  matchSize = parseInt(Arguments.toString());
 }
 
 // Helper Functions
